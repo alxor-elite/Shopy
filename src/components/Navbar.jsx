@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingBag, Search, ChevronDown, User } from 'lucide-react'
+import { ShoppingBag, Search, ChevronDown, User, Heart } from 'lucide-react'
 import { useCart } from '../hooks/useCart'
 import { useAuth } from '../hooks/useAuth'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
@@ -121,6 +121,13 @@ export default function Navbar() {
             <button className="p-2.5 text-[#1C1B1A] hover:text-[#6B6663] tr hidden sm:flex hover:bg-white/50" style={{ borderRadius: 12 }}>
               <Search size={19} strokeWidth={1.5} />
             </button>
+            <Link
+              to="/wishlist"
+              className="p-2.5 text-[#1C1B1A] hover:text-[#6B6663] tr hidden sm:flex hover:bg-white/50"
+              style={{ borderRadius: 12 }}
+            >
+              <Heart size={19} strokeWidth={1.5} />
+            </Link>
             <Link
               to={user ? '/account' : '/auth'}
               className="p-2.5 text-[#1C1B1A] hover:text-[#6B6663] tr hidden sm:flex hover:bg-white/50"

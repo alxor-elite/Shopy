@@ -16,6 +16,7 @@ import OrderConfirmation from './pages/OrderConfirmation'
 import Auth from './pages/Auth'
 import Account from './pages/Account'
 import Wishlist from './pages/Wishlist'
+import { ShippingReturns, SizeGuide, ContactUs, FAQ } from './pages/HelpPages'
 import AdminLogin from './pages/Admin/Login'
 import AdminLayout from './pages/Admin/Layout'
 import AdminDashboard from './pages/Admin/Dashboard'
@@ -76,6 +77,10 @@ export default function App() {
               <Route path="/auth" element={<StorefrontLayout><Auth /></StorefrontLayout>} />
               <Route path="/account" element={<StorefrontLayout><Account /></StorefrontLayout>} />
               <Route path="/wishlist" element={<StorefrontLayout><Wishlist /></StorefrontLayout>} />
+              <Route path="/shipping-returns" element={<StorefrontLayout><ShippingReturns /></StorefrontLayout>} />
+              <Route path="/size-guide" element={<StorefrontLayout><SizeGuide /></StorefrontLayout>} />
+              <Route path="/contact" element={<StorefrontLayout><ContactUs /></StorefrontLayout>} />
+              <Route path="/faq" element={<StorefrontLayout><FAQ /></StorefrontLayout>} />
 
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>

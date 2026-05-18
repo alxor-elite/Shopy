@@ -64,6 +64,7 @@ export default function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState(null)
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedColorIdx, setSelectedColorIdx] = useState(0)
+  const [quantity, setQuantity] = useState(1)
   const [addedState, setAddedState] = useState(false)
   const [adding, setAdding] = useState(false)
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false)
@@ -113,19 +114,22 @@ export default function ProductDetail() {
 
   const sizes = product.product_sizes || []
   const colors = product.product_colors?.sort((a, b) => a.sort_order - b.sort_order) || []
-  const activeColorImage = colors[selectedColorIdx]?.image_url
+  const activeColor = selectedColorIdx >= 0 ? colors[selectedColorIdx] : null
+  const activeColorImage = activeColor?.image_url || null
   const mainImage = activeColorImage || product.images?.[selectedImage] || 'https://placehold.co/600x600/F5F2EC/6B6663'
   const selectedSizeData = sizes.find(s => s.size === selectedSize)
   const stock = selectedSizeData?.stock ?? null
+  const maxQty = stock !== null ? Math.min(stock, 5) : 5
 
   const handleAddToCart = () => {
     if (!selectedSize) return
     setAdding(true)
     setTimeout(() => {
-      addItem(product, selectedSize)
-      addToast(`${product.name} (${selectedSize}) added to bag`)
+      addItem(product, selectedSize, quantity)
+      addToast(`${product.name} (${selectedSize}) x${quantity} added to bag`)
       setAdding(false)
       setAddedState(true)
+      setQuantity(1)
       setTimeout(() => setAddedState(false), 2000)
     }, 600)
   }
@@ -162,12 +166,20 @@ export default function ProductDetail() {
             </div>
             {/* Thumbnails */}
             <div className="flex gap-2.5 mt-3">
-              {(product.images?.length > 0 ? product.images : [product.images?.[0]]).filter(Boolean).map((img, i) => (
+              {activeColorImage && (
+                <button
+                  className="w-[80px] h-[100px] overflow-hidden tr flex-shrink-0 ring-2 ring-[#FFD600] ring-offset-2"
+                  style={{ borderRadius: 14 }}
+                >
+                  <img src={activeColorImage} alt="" className="w-full h-full object-cover" />
+                </button>
+              )}
+              {(product.images || []).filter(Boolean).map((img, i) => (
                 <button
                   key={i}
-                  onClick={() => setSelectedImage(i)}
+                  onClick={() => { setSelectedImage(i); setSelectedColorIdx(-1) }}
                   className={`w-[80px] h-[100px] overflow-hidden tr flex-shrink-0 ${
-                    selectedImage === i ? 'ring-2 ring-[#FFD600] ring-offset-2' : 'opacity-60 hover:opacity-100'
+                    !activeColorImage && selectedImage === i ? 'ring-2 ring-[#FFD600] ring-offset-2' : 'opacity-60 hover:opacity-100'
                   }`}
                   style={{ borderRadius: 14 }}
                 >
@@ -256,8 +268,37 @@ export default function ProductDetail() {
 
             {/* Stock */}
             {selectedSize && stock !== null && (
-              <div className="flex items-center gap-2 mb-5">
+              <div className="flex items-center gap-2 mb-4">
                 <StockBadge stock={stock} />
+              </div>
+            )}
+
+            {/* Quantity */}
+            {selectedSize && stock > 0 && (
+              <div className="mb-5">
+                <h3 className="text-[13px] font-semibold text-[#1C1B1A] uppercase tracking-[0.05em] mb-2">Quantity</h3>
+                <div className="inline-flex items-center glass-strong" style={{ borderRadius: 12 }}>
+                  <button
+                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                    disabled={quantity <= 1}
+                    className="w-10 h-10 flex items-center justify-center text-[18px] text-[#1C1B1A] tr hover:bg-white/50 disabled:opacity-30 disabled:cursor-not-allowed"
+                    style={{ borderRadius: '12px 0 0 12px' }}
+                  >
+                    &minus;
+                  </button>
+                  <span className="w-12 h-10 flex items-center justify-center text-[14px] font-semibold text-[#1C1B1A]" style={{ borderLeft: '1px solid rgba(217,212,203,.5)', borderRight: '1px solid rgba(217,212,203,.5)' }}>
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => setQuantity(q => Math.min(maxQty, q + 1))}
+                    disabled={quantity >= maxQty}
+                    className="w-10 h-10 flex items-center justify-center text-[18px] text-[#1C1B1A] tr hover:bg-white/50 disabled:opacity-30 disabled:cursor-not-allowed"
+                    style={{ borderRadius: '0 12px 12px 0' }}
+                  >
+                    +
+                  </button>
+                </div>
+                {maxQty <= 5 && <span className="text-[12px] text-[#6B6663] ml-3">Max {maxQty} available</span>}
               </div>
             )}
 

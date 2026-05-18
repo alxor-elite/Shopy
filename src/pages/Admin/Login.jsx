@@ -7,8 +7,10 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signIn } = useAuth()
+  const { signIn, isAdmin } = useAuth()
   const navigate = useNavigate()
+
+  const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -18,6 +20,8 @@ export default function AdminLogin() {
     const { error } = await signIn(email, password)
     if (error) {
       setError(error.message)
+    } else if (!adminEmails.includes(email.trim().toLowerCase())) {
+      setError('Access denied. Not an admin account.')
     } else {
       navigate('/admin')
     }

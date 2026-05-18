@@ -45,8 +45,11 @@ export function AuthProvider({ children }) {
 
   const user = session?.user ?? null
 
+  const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean)
+  const isAdmin = user ? adminEmails.includes(user.email?.toLowerCase()) : false
+
   return (
-    <AuthContext.Provider value={{ session, user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ session, user, loading, signIn, signUp, signOut, isAdmin }}>
       {children}
     </AuthContext.Provider>
   )
